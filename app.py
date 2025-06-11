@@ -5,6 +5,10 @@ import requests
 import csv
 import io
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
+API_KEY = os.getenv("WEATHER_API_KEY")
 
 
 app = Flask(__name__)
@@ -15,7 +19,7 @@ db = SQLAlchemy(app)
 with app.app_context():
     db.create_all()
 
-API_KEY = "7f638e139b25571d82a9f69404f1e985"  # Replace with your API key
+
 
 class WeatherEntry(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -53,9 +57,21 @@ def index():
                     "description": data["weather"][0]["description"],
                     "icon": data["weather"][0]["icon"]
                 }
+
+                today = datetime.today().date()
+                entry = WeatherEntry(
+                    location=location,
+                    start_date=today,
+                    end_date=today,
+                    temperature=str(data["main"]["temp"]),
+                    description=data["weather"][0]["description"]
+                )
+                db.session.add(entry)
+                db.session.commit()
             else:
                 weather_data = {"error": "City not found"}
     return render_template("index.html", weather=weather_data)
+
 
 @app.route("/create", methods=["POST"])
 def create():
@@ -94,14 +110,19 @@ def read():
     entries = WeatherEntry.query.order_by(WeatherEntry.timestamp.desc()).all()
     return render_template("read.html", entries=entries)
 
-@app.route("/update/<int:id>", methods=["GET", "POST"])
+@app.route('/update/<int:id>', methods=['GET', 'POST'])   
 def update(id):
-    entry = WeatherEntry.query.get_or_404(id)
-    if request.method == "POST":
-        entry.location = request.form.get("location")
-        db.session.commit()
-        return redirect(url_for("read"))
-    return render_template("update.html", entry=entry)
+    task = Todo.query.get_or_404(id) 
+    if request.method == 'POST':
+        task.content = request.form['content']
+        try:
+            db.session.commit()
+            return redirect('/')
+        except:
+            return 'There was an issue updating your task'
+    else:
+        return render_template('update.html', task=task)
+
 
 @app.route("/delete/<int:id>")
 def delete(id):

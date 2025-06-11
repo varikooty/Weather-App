@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block head %}
+  <title>Update Weather Entry</title>
+{% endblock %}
+
+{% block body %}
+  <h1>Update Entry for {{ entry.location }}</h1>
+  <form action="{{ url_for('update', id=entry.id) }}" method="POST">
+    <label for="location">Location:</label>
+    <input type="text" name="location" id="location" required value="{{ entry.location }}">
+
+    <label for="start_date">Start Date:</label>
+    <input type="date" name="start_date" id="start_date" required value="{{ entry.start_date }}">
+
+    <label for="end_date">End Date:</label>
+    <input type="date" name="end_date" id="end_date" required value="{{ entry.end_date }}">
+
+    <label for="temperature">Temperature:</label>
+    <input type="text" name="temperature" id="temperature" value="{{ entry.temperature }}">
+
+    <label for="description">Description:</label>
+    <input type="text" name="description" id="description" value="{{ entry.description }}">
+
+    <input type="submit" value="Update Entry">
+  </form>
+
+  <a href="{{ url_for('read') }}">Cancel</a>
+{% endblock %}

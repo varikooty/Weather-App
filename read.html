@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block head %}
+  <title>Weather Entries</title>
+{% endblock %}
+
+{% block body %}
+  <h1>Saved Weather Entries</h1>
+
+  {% if entries %}
+  <table>
+    <tr>
+      <th>Location</th>
+      <th>Start</th>
+      <th>End</th>
+      <th>Temperature</th>
+      <th>Description</th>
+      <th>Timestamp</th>
+      <th>Actions</th>
+    </tr>
+    {% for entry in entries %}
+    <tr>
+      <td>{{ entry.location }}</td>
+      <td>{{ entry.start_date }}</td>
+      <td>{{ entry.end_date }}</td>
+      <td>{{ entry.temperature }}</td>
+      <td>{{ entry.description }}</td>
+      <td>{{ entry.timestamp }}</td>
+      <td>
+        <a href="{{ url_for('update', id=entry.id) }}">Update</a> |
+        <a href="{{ url_for('delete', id=entry.id) }}">Delete</a>
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+  {% else %}
+    <p>No entries saved.</p>
+  {% endif %}
+
+  <a href="{{ url_for('index') }}">Back to Search</a>
+{% endblock %}
