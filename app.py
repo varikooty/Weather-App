@@ -112,16 +112,21 @@ def read():
 
 @app.route('/update/<int:id>', methods=['GET', 'POST'])   
 def update(id):
-    task = WeatherEntry.query.get_or_404(id) 
+    entry = WeatherEntry.query.get_or_404(id)
     if request.method == 'POST':
-        task.content = request.form['content']
+        entry.location = request.form['location']
+        entry.start_date = datetime.strptime(request.form['start_date'], "%Y-%m-%d")
+        entry.end_date = datetime.strptime(request.form['end_date'], "%Y-%m-%d")
+        entry.temperature = request.form['temperature']
+        entry.description = request.form['description']
         try:
             db.session.commit()
-            return redirect('/')
+            return redirect(url_for("read"))
         except:
-            return 'There was an issue updating your task'
+            return 'There was an issue updating the entry'
     else:
-        return render_template('update.html', task=task)
+        return render_template('update.html', entry=entry)
+
 
 
 @app.route("/delete/<int:id>")
